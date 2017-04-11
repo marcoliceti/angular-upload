@@ -11,16 +11,25 @@ msl_upload.directive('mslDndFolderInput', function () {
 			if (!handler) throw 'msl-dnd-folder-input: You should specify a folder selection handler';
 			if (!scope[handler]) throw 'msl-dnd-folder-input: The specified handler doesn\'t exist in your scope';
 
+			var handleOnce = false;
+            if ("mslFolderInputCallOnce" in attributes) {
+                handleOnce = true;
+            }
+            
 			var processedFiles = 0;
             var allFiles = 0;
             var completedFiles = [];
 			function exploreFolder(item) {
 				if (item.isFile) {
                     item.file(function(file){
-                        completedFiles.push(file);
-                        processedFiles++;
-                        if(processedFiles == allFiles){
-                            scope.$apply(function () { scope[handler](completedFiles); });
+                    	if (handleOnce) {
+                        	completedFiles.push(file);
+                        	processedFiles++;
+                        	if(processedFiles == allFiles){
+                            	scope.$apply(function () { scope[handler](completedFiles); });
+                        	}
+                        } else {
+							scope.$apply(function () { scope[handler]([file]); });
                         }
                     });
 				} else if (item.isDirectory) {
