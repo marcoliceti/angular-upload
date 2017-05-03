@@ -35,6 +35,12 @@ msl_upload.directive('mslDndFolderInput', function () {
 				} else if (item.isDirectory) {
 					var directory_reader = item.createReader();
 			    	directory_reader.readEntries(function(entries) {
+			    		if(handleOnce){
+			    			allFiles += entries.length -1;
+			    			if(processedFiles == allFiles){
+			    				scope.$apply(function() { scope[handler](completedFiles); });
+			    			}
+			    		}
 						for (var i = 0; i < entries.length; i++) {
 							var entry = entries[i];
 							exploreFolder(entry);
